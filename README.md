@@ -11,7 +11,7 @@ Our Loan Recommendation Service offers a data-driven approach to assist financia
 ## Getting Started
 - **Prerequisites**: Install `Python 3.11` and `pip` on your system.
 - **Installation**: Run `pip install -r requirements.txt` to install all the required packages, which include FastAPI, Pydantic, and Uvicorn for the web server functionality.
-- **API Usage**: Consult `api_documentation.md` for comprehensive guidelines on interacting with the API endpoints.
+- **API Usage**: Consult `API_Documentation.md` for comprehensive guidelines on interacting with the API endpoints.
 
 ## How to Install
 1. Clone the repository by executing `git clone <Repository_URL>`.

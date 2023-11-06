@@ -21,3 +21,5 @@ Our Loan Recommendation Service offers a data-driven approach to assist financia
 ## Details
 - The machine learning model is built using XGBoost for classification tasks and OneHotEncoder for processing categorical variables.
 - The loan recommendation logic provided in the `utility.py` file serves as an outline for showing how to recommend a loan.
+
+# 18221164 - Damian Marvel

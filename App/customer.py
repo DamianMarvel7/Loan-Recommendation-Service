@@ -5,13 +5,13 @@ from pydantic import BaseModel
 import uuid
 
 class Customer(BaseModel):
-    Customer_ID: Optional[str] = None
-    Gender: Optional[str] = None
-    Married: Optional[str] = None
-    Dependents: Optional[str] = None
-    Education: Optional[str] = None
-    ApplicantIncome: Optional[int] = None
-    Property_Area: Optional[str] = None
+    Customer_ID: str
+    Gender: str
+    Married: str
+    Dependents: str
+    Education: str
+    ApplicantIncome: int
+    Property_Area: str
 
 json_filename = "customer.json"
 
@@ -39,10 +39,11 @@ async def read_customer(customer_id: str):
 async def add_customer(customer: Customer):
     data = read_customer_data()
     customer_dict = customer.dict()
-
-    # Generate a unique identifier for the Customer_ID
-    unique_id = str(uuid.uuid4())
-    customer_dict['Customer_ID'] = unique_id
+    
+    # Check if Customer_ID already exists
+    for existing_customer in data:
+        if existing_customer['Customer_ID'] == customer_dict['Customer_ID']:
+            raise HTTPException(status_code=400, detail='Customer with the same ID already exists')
 
     data.append(customer_dict)
 
@@ -55,6 +56,11 @@ async def add_customer(customer: Customer):
 async def update_customer(customer_id: str, customer: Customer):  # Change customer_id type to str
     data = read_customer_data()
     customer_dict = customer.dict()
+
+    # Check if Customer_ID already exists
+    for existing_customer in data:
+        if existing_customer['Customer_ID'] == customer_dict['Customer_ID']:
+            raise HTTPException(status_code=400, detail='Customer with the same ID already exists')
     
     for i, cust in enumerate(data):
         if cust['Customer_ID'] == customer_id:  # Comparing strings now

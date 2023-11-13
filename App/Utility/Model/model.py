@@ -7,15 +7,17 @@ import joblib
 def transform_customer_data(df):
     columns_to_encode = ['Gender', 'Married', 'Education', 'Property_Area']
 
-    preprocessor = joblib.load('./App/Utility/preprocessor.joblib')
+    preprocessor = joblib.load('./Utility/Model/preprocessor.joblib')
     df_encoded_array = preprocessor.transform(df)
-    feature_names = (preprocessor.named_transformers_['one_hot'].get_feature_names_out(columns_to_encode)
-                    .tolist() + [col for col in df.columns if col not in columns_to_encode])
-
+    # feature_names = (preprocessor.named_transformers_['one_hot'].get_feature_names_out(columns_to_encode)
+    #                 .tolist() + [col for col in df.columns if col not in columns_to_encode])
+    feature_names = ['Gender_Male', 'Married_Yes', 'Education_Not Graduate',
+       'Property_Area_Semiurban', 'Property_Area_Urban', 'Dependents',
+       'ApplicantIncome', 'LoanAmount', 'Loan_Amount_Term']
     df_encoded = pd.DataFrame(df_encoded_array, columns=feature_names)
     df_encoded = df_encoded.astype(int)
-
     return df_encoded
+
 
 def get_customer(customer_id,loan_amount,loan_amount_term):
     api_url = f"https://loanrecommendationapi.azurewebsites.net/customers/{customer_id}"
@@ -38,7 +40,7 @@ def get_customer(customer_id,loan_amount,loan_amount_term):
 
 def predict_default(df):
     df_preprocessed = transform_customer_data(df)
-    model = joblib.load('./App/Utility/xgb_model.joblib')
+    model = joblib.load('./Utility/Model/xgb_model.joblib')
     pred = model.predict(df_preprocessed)
 
     if(pred==0):
@@ -80,10 +82,10 @@ def recommend_loan(data):
         "WillDefault": loan_amount
     }
 
-# Example usage:
-customer_id = "1"
-customer_data  = get_customer(customer_id,110,360)
-print(customer_data['Gender'].values[0])
-print(predict_default(customer_data))
+# # Example usage:
+# customer_id = "1"
+# customer_data  = get_customer(customer_id,110,360)
+# print(customer_data['Gender'].values[0])
+# print(predict_default(customer_data))
 
-print(recommend_loan(customer_data))
+# print(recommend_loan(customer_data))

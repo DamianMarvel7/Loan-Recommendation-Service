@@ -32,9 +32,9 @@ def get_user(db, username: str):
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     username = decode_token(token)
-    fake_users_db = read_account_data()
+    users_db = read_account_data()
     
-    user = get_user(fake_users_db, username)
+    user = get_user(users_db, username)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -46,9 +46,9 @@ async def get_current_active_user(current_user: Annotated[User, Depends(get_curr
 
 @router.post("/login")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    fake_users_db = read_account_data()
+    users_db = read_account_data()
 
-    user_dict = fake_users_db.get(form_data.username)
+    user_dict = users_db.get(form_data.username)
     if not user_dict:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     user = UserInDB(**user_dict)
@@ -57,7 +57,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     token = encode_token(user.username)
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token,"username":form_data.username, "token_type": "bearer"}
 
 
 class UserRegistration(BaseModel):
@@ -70,9 +70,9 @@ async def register_user(user: UserRegistration):
     username = user.username
     password = user.password
 
-    fake_users_db = read_account_data()
+    users_db = read_account_data()
 
-    if username in fake_users_db:
+    if username in users_db:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail="Username already taken"
@@ -80,13 +80,13 @@ async def register_user(user: UserRegistration):
 
     hashed_password = hash_password(password)
 
-    fake_users_db[username] = {
+    users_db[username] = {
         "username": username,
         "hashed_password": hashed_password
     }
 
     with open(json_userfilename, "w") as write_file:
-        json.dump(fake_users_db, write_file, indent=4)
+        json.dump(users_db, write_file, indent=4)
 
     return {"message": "User registered successfully"}
 
